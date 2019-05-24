@@ -1,0 +1,70 @@
+#include "Hunky.h"
+#include <iostream>
+#include <fstream>
+
+using namespace std;
+
+HunkyStat::HunkyStat() {
+	last = NULL;
+	fstream file("WorkersS.txt", ios::in | ios::out | ios::app);
+	if (!file.is_open()) {
+		cout << "Файл с штатного работника не может быть открыт или создан" << endl;
+		system("pause");
+	}
+	else {
+		while (!file.eof()) {
+			slave *tmp = new slave;
+			file >> tmp->name >> tmp->secondName >> tmp->phone >> tmp->address >> tmp->sum;
+			if (tmp->name[0] == '\0') {
+				delete tmp;
+				break;
+			}
+			tmp->prev = last;
+			last = tmp;
+			num++;
+
+		}
+	}
+	file.close();
+}
+
+HunkyStat::~HunkyStat() {
+	slave *tmp = last;
+	fstream file("WorkersS.txt", ios::out | ios::trunc);
+	if (!file.is_open()) {
+		cout << "Файл штатного работника не может быть открыт или создан" << endl;
+		system("pause");
+	}
+	for (int i = num; i > 0; i--) {
+		file << " " << tmp->name << " " << tmp->secondName << " " << tmp->phone << " " << tmp->address << " " << tmp->sum;
+		tmp = tmp->prev;
+	}
+	file.close();
+	for (int i = 0; i < num; i++) {
+		tmp = last->prev;
+		delete last;
+		last = tmp;
+	}
+	cout << "HS" << endl;
+	system("pause");
+}
+
+int HunkyStat::payday() {
+	slave *tmp = last;
+	if (num == 0) {
+		cout << "Тута ничего нету" << endl;
+		return 0;
+	}
+	int i;
+	this->pin();
+	cout << "Введите номер работника, для которого нужно вычислить зарплату: ";
+	cin >> i;
+	while (i > 1) {
+		tmp = tmp->prev;
+		i--;
+	}
+	cout << "Введите кол-во месяцев: ";
+	cin >> i;
+	cout << "Зарплата равна = " << i * tmp->sum << endl;
+	return 0;
+}
